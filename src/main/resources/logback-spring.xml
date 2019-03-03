@@ -23,9 +23,10 @@
             %msg%n
         </pattern>
     </encoder>
+
     <!-- 滚动策略，按时间滚动，每天一个日志-->
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-        <fileNamePattern>F:/日志/info.%d.log</fileNamePattern>
+        <fileNamePattern>/var/log/sell/info.%d.log</fileNamePattern>
     </rollingPolicy>
 </appender>
 
@@ -42,7 +43,7 @@
     </encoder>
     <!-- 滚动策略，按时间滚动，每天一个日志-->
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-        <fileNamePattern>F:/日志/error.%d.log</fileNamePattern>
+        <fileNamePattern>/var/log/sell/error.%d.log</fileNamePattern>
     </rollingPolicy>
 </appender>
 
