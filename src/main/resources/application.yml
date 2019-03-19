@@ -10,3 +10,15 @@ spring:
     default-property-inclusion: non_null
 server:
   context-path: /sell
+# 下面是微信相关的配置
+wechat:
+  mpAppId: wx36d0df1f7ab16df1
+  mpAppSecret: 95cfb769e1f944c9704c6e06400e828f
+  mchId: 1483469312
+  mchKey: C5245D70627C1F8E9964D494B0735025
+  keyPath: C:/Users/Administrator/Downloads/h5.p12
+  notifyUrl: http://sqmax.natapp1.cc/notify
+
+projectUrl:
+  wechatMpAuthorize: http://mywxell.natapp1.cc
+
