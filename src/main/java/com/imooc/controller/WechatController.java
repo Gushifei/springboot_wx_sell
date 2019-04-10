@@ -3,6 +3,7 @@ package com.imooc.controller;
 import com.imooc.config.ProjectUrlConfig;
 import com.imooc.enums.ResultEnum;
 import com.imooc.exception.SellException;
+import com.imooc.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -34,6 +35,9 @@ public class WechatController {
     @Autowired
     private WxMpService wxMpService;
 
+    @Autowired
+    private WxMpService wxOpenService;
+
     @GetMapping("/authorize")
     public String authorize(@RequestParam("returnUrl") String returnUrl) {
         //1.配置
@@ -61,5 +65,28 @@ public class WechatController {
     //以上两个方法是SDK方式微信网页授权的过程，
     // 访问http://mywxell.natapp1.cc/sell/wechat/authorize?returnUrl=http://www.imooc.com，
     //最终将会跳转到这个链接：http://www.imooc.com?openid={openid}
+
+    //1.微信二维码登录  redirectUrl是认证过后最终要跳转到的地址
+    @GetMapping("/qrAuthorize")
+    public String qrAuthorize(@RequestParam("returnUrl") String returnUrl){
+        String url = projectUrlConfig.getWechatOpenAuthorize() + "/sell/wechat/qrUserInfo";
+        String redirectUrl = wxOpenService.buildQrConnectUrl(url,WxConsts.QRCONNECT_SCOPE_SNSAPI_LOGIN,URLEncoder.encode(returnUrl));
+        return "redirect:" + redirectUrl;
+    }
+    //2.redirectUrl?code = XX &state = returnUrl,根据code获取token
+    @GetMapping("/qrUserInfo")
+    public String qrUserInfo(@RequestParam("code") String code,
+                             @RequestParam("state") String returnUrl){
+        WxMpOAuth2AccessToken wxMpOAuth2AccessToken = new WxMpOAuth2AccessToken();
+        try {
+            wxOpenService.oauth2getAccessToken(code);
+        }catch (WxErrorException e) {
+            log.error("[微信网页授权] {}", e);
+            throw new SellException(ResultEnum.WECHAT_MP_ERROR);
+        }
+        log.info("wxMpOAuth2AccessToken={}", JsonUtil.toJson(wxMpOAuth2AccessToken));
+        String openId= wxMpOAuth2AccessToken.getOpenId();
+        return "redirect" + returnUrl + "?openid=" + openId;
+    }
 
 }
